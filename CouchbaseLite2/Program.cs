@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -17,7 +16,7 @@ namespace CouchbaseLite2
 
         private const string OtherDbName = "app1";
         private const string OtherDbIp = "127.0.0.1";
-        private const ushort OtherDbPort = 59840;
+        private const ushort OtherDbPort = 59841;
 
         private static readonly Uri OtherUrl = new Uri($"http://{OtherDbIp}:{OtherDbPort}/{OtherDbName}");
 
@@ -28,13 +27,9 @@ namespace CouchbaseLite2
         {
             SetupLogger();
 
-/*
-            var directoryPath = $"D:\\{Process.GetCurrentProcess().ProcessName}";
             manager = new Manager(
-                Directory.CreateDirectory(directoryPath),
+                Directory.CreateDirectory("D:\\CouchbaseLite"),
                 ManagerOptions.Default);
-*/
-            manager = Manager.SharedInstance;
 
             db = manager.GetDatabase(DbName);
 
@@ -64,7 +59,7 @@ namespace CouchbaseLite2
 
             //Log.Level = Log.LogLevel.Debug;
             //Log.Domains.All.Level = Log.LogLevel.Debug;
-            Log.Domains.Sync.Level = Log.LogLevel.Debug;
+            Log.Domains.Sync.Level = Log.LogLevel.Verbose;
         }
 
         private static void HandleCommands(CancellationTokenSource shutdownTokenSource)
@@ -97,6 +92,7 @@ namespace CouchbaseLite2
         {
             var sb = new StringBuilder("Documents:" + Environment.NewLine);
             var allDocumentsQuery = db.CreateAllDocumentsQuery();
+            allDocumentsQuery.AllDocsMode = AllDocsMode.BySequence;
             var rows = allDocumentsQuery.Run();
 
             var count = 0;
